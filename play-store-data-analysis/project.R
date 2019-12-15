@@ -1,12 +1,13 @@
-#install.packages("UsingR")
-#install.packages("kohonen")
-#install.packages("dplyr")
-#install.packages("e1071")
-#install.packages("ggplot2")
+install.packages("UsingR")
+install.packages("kohonen")
+install.packages("dplyr")
+install.packages("e1071")
+install.packages("ggplot2")
 library(kohonen)
 library(dplyr)
 library(ggplot2)
 library(e1071)
+
 
 # For categorical-numeric use boxplot, table, chisq
 # For categorical-categorical comparison use t-test, boxplot, anova

@@ -18,8 +18,8 @@ library(e1071)
 options(scipen = 100)
 
 # Choose the csv file with data
-fileName <- file.choose()
-store = read.csv(fileName)
+#fileName <- file.choose()
+#store = read.csv(fileName)
 
 # File on the local system
 fileName <- "/home/luchev/Github/uni-statistics/play-store-data-analysis/googleplaystore.csv"
@@ -70,13 +70,16 @@ genres = unique(genres)
 
 # Number of installs of all
 par(mar=c(5,5,5,0))
-barplot(prop.table(table(store$Installs)))
+barplot(prop.table(table(store$Installs)), xlab="Installs", ylab="Percentage of apps")
 # There are very few applications with 1B+ installs so we probably
 # want to try and develop an application targeting 1M to 100M users
 
+# Summary to show the mean and the quantiles
+summary(store$Installs)
+
 # Paid/Free and number of Installs
 par(mar=c(5,5,5,0))
-barplot(prop.table(table(store$Type, store$Installs), 2))
+barplot(prop.table(table(store$Type, store$Installs), 2), xlab="Installs", ylab="Percentage paid apps (grey = paid)")
 # There are no paid applications with more than 1M users, so if we want many users
 # we should develop an application that is Free
 
@@ -98,13 +101,13 @@ for (category in categories) {
 
 # Total installs by category chart
 par(mar=c(12,8,5,0))
-barplot(category_total_installs[,1], names=row.names(category_total_installs), col=rainbow(length(row.names(category_total_installs))), las=2)
+barplot(category_total_installs[,1], main = "Total Installs by category", names=row.names(category_total_installs), col=rainbow(length(row.names(category_total_installs))), las=2)
 # The most installed apps are either for Communication or Games, so if we want to
 # have many users we need to target one of these categories
 
 # Average installs by category chart
 par(mar=c(12,8,5,0))
-barplot(category_average_installs[,1], names=row.names(category_average_installs), col=rainbow(length(row.names(category_average_installs))), las=2)
+barplot(category_average_installs[,1], main = "Average Installs by category", names=row.names(category_average_installs), col=rainbow(length(row.names(category_average_installs))), las=2)
 # On average, however Communication apps have way more installs than Games
 # That means that if we make a game our chance of success is less
 
@@ -113,13 +116,16 @@ gameRating <- subset(store, Category == "GAME")$Rating
 mapRating <- subset(store, Category == "MAPS_AND_NAVIGATION")$Rating
 shoppingRating <- subset(store, Category == "SHOPPING")$Rating
 educationRating <- subset(store, Category == "EDUCATION")$Rating
-etertainRating <- subset(store, Category == "ENTERTAINMENT")$Rating
+entertainRating <- subset(store, Category == "ENTERTAINMENT")$Rating
+medicalRating <- subset(store, Category == "MEDICAL")$Rating
 
-hist(gameRating)
-hist(mapRating)
-hist(shoppingRating)
-hist(educationRating)
-hist(entertainRating)
+par(mar=c(5,5,5,2))
+hist(gameRating, main = "Category Gaming", xlab = "Rating", ylab = "Reviews")
+hist(mapRating, main = "Category Maps and Navigation", xlab = "Rating", ylab = "Reviews")
+hist(shoppingRating, main = "Category Shopping", xlab = "Rating", ylab = "Reviews")
+hist(educationRating, main = "Category Education", xlab = "Rating", ylab = "Reviews")
+hist(entertainRating, main = "Category Entertainment", xlab = "Rating", ylab = "Reviews")
+hist(medicalRating, main = "Category Medical", xlab = "Rating", ylab = "Reviews")
 # Because there are not many 5-star apps in these categories it's a good idea to try
 # to develop an app in one of these categories - Game/Maps/Shopping,
 
@@ -134,15 +140,16 @@ qplot(store$Installs, store$Reviews)
 # rate the app they use
 
 # Number of Reviews and Rating
-qplot(store$Reviews, store$Rating)
+qplot(store$Reviews, store$Rating, xlab = "Number of Reviews", ylab = "Rating")
 # Most reviews are mainly for apps with 3.5+ rating
 # This means that people are more likely to give a good review
 # rather than negative feedback what they didn't like
 
 # The same thing can be ovserved in the following density plot
-plot(density(store$Rating))
+par(mar=c(5,5,5,2))
+plot(density(store$Rating), main = "Rating density")
 polygon(density(store$Rating), col="green")
-#
+
 
 
 
@@ -155,31 +162,31 @@ polygon(density(store$Rating), col="green")
 
 # Category Rating Reviews Installs
 
-data_train = store[, c("Rating", "Reviews", "Installs")]
-colnames(data_train) = c("Rating", "Reviews", "Installs")
-head(data_train)
-categories
+#data_train = store[, c("Rating", "Reviews", "Installs")]
+#colnames(data_train) = c("Rating", "Reviews", "Installs")
+#head(data_train)
+#categories
 
 
-data_train <- store[, c("Category", "Rating", "Reviews", "Installs")]
-data_train = subset(data_train, Rating > 4.5)
-head(data_train)
+#data_train <- store[, c("Category", "Rating", "Reviews", "Installs")]
+#data_train = subset(data_train, Rating > 4.5)
+#head(data_train)
 
-data_train_matrix <- as.matrix(scale(data_train))
+#data_train_matrix <- as.matrix(scale(data_train))
 
-som_grid <- somgrid(xdim=15, ydim=15, topo="hexagonal")
+#som_grid <- somgrid(xdim=15, ydim=15, topo="hexagonal")
 
-som_model <- som(data_train_matrix, grid=som_grid, rlen=500, alpha=c(0.05,0.01), keep.data=TRUE)
+#som_model <- som(data_train_matrix, grid=som_grid, rlen=500, alpha=c(0.05,0.01), keep.data=TRUE)
 
 # plot(som_model, type="changes")
-plot(som_model, type="count", main="Node Counts")
-plot(som_model, type="dist.neighbours", main = "SOM neighbour distances")
-plot(som_model, type="codes")
+#plot(som_model, type="count", main="Node Counts")
+#plot(som_model, type="dist.neighbours", main = "SOM neighbour distances")
+#plot(som_model, type="codes")
 
-som_cluster <- cutree(hclust(dist(unlist(som_model$codes))), 6)
+#som_cluster <- cutree(hclust(dist(unlist(som_model$codes))), 6)
 # plot these results:
-plot(som_model, type="mapping", main = "Clusters")
-add.cluster.boundaries(som_model, som_cluster)
+#plot(som_model, type="mapping", main = "Clusters")
+#add.cluster.boundaries(som_model, som_cluster)
 
 # multidimetional scanning
 # self organized map

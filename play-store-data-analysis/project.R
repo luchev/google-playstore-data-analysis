@@ -151,6 +151,14 @@ plot(density(store$Rating), main = "Rating density")
 polygon(density(store$Rating), col="green")
 
 
+# Why rating is so important
+qqplot(store$Rating, store$Installs, xlab = "Rating", ylab = "Installs")
+
+
+
+
+
+
 
 
 
